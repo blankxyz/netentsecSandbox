@@ -1,0 +1,234 @@
+<apex:page standardController="Project_Task__c"  extensions="SelectAssignedTeamMemberController" tabStyle="Project_Task__c" >
+    <script type="text/javascript">
+    function cancelBtn() {
+        var MilestoneId= "{!$CurrentPage.parameters.MilestoneId}";
+        window.location.href = '/' + MilestoneId;
+       }
+       function checkAll(cb) {
+             var inputElem = document.getElementsByTagName("input");
+             for(var i=0; i<inputElem.length; i++){
+                 if(inputElem[i].id.indexOf("checkedone")!=-1)
+                 inputElem[i].checked = cb.checked;
+             }
+        }
+    </script>
+
+    <apex:sectionHeader title="{!IF(isEdit== true, '编辑', '新建')}{!IF(TaskRecordtype  == 'WorkOrder', '工单', '任务')}"/>
+
+    <apex:form id="form">
+    <apex:actionFunction action="{!refreshPage}" name="refreshPage" reRender="form"/>
+    <apex:pageMessages Id="message"/>
+        <apex:pageBlock mode="edit" >         
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="查看项目人员状态" 
+                     action="{!query}" status="status" rerender="query, message" rendered="{!NOT(
+                     TaskRecordtype == 'WorkOrder')}"/>
+                <apex:commandButton value="保存" action="{!save}" />
+                <apex:commandButton value="返回" action="{!cancel}" 
+                    />
+                <apex:actionStatus id="status">
+                    <apex:facet name="start">
+                        <span style="width: 500px;">
+                            <img src="/img/loading24.gif" style="vertical-align:middle;"/>
+                            <span style="margin-left: 10px; font-size: 12px; font-weight: bold; color: #000000;">
+                               PleaseWait...</span>
+                        </span>
+                    </apex:facet>      
+                </apex:actionStatus>
+            </apex:pageBlockButtons>
+            
+            <apex:outputpanel Id="filter" >
+                <apex:pageBlockSection columns="2" rendered="{!NOT(TaskRecordtype == 'WorkOrder')}">
+                    
+                    <apex:inputField id="Name" value="{!task.name}"/>
+                    <apex:inputField id="Employee__c" value="{!task.Employee__c}"/>
+                    
+                    <apex:pageBlockSectionItem >
+                    <apex:outputLabel >部门</apex:outputLabel>
+                   
+                    <apex:selectList id="department" value="{!department}" multiselect="false" size="1" >
+                        <apex:selectOptions value="{!departments }" ></apex:selectOptions>
+                        <apex:actionsupport event="onchange" rerender="AssignedTo" />
+                    </apex:selectList>
+                    
+                    </apex:pageBlockSectionItem>
+                    <apex:selectList id="AssignedTo" value="{!task.Assigned_To__c}" multiselect="false" size="1" >
+                        <apex:selectOptions value="{!employees}" ></apex:selectOptions>
+                    </apex:selectList>
+
+                    
+                    <apex:inputField id="StartDate" value="{!task.Start_Date__c}" />
+                    <apex:inputField id="DueDate" value="{!task.Due_Date__c}"/>
+
+                    
+                    <apex:inputField id="Description" value="{!task.Description__c}"/>
+                    <apex:inputField id="Priority" value="{!task.Priority__c}"/>
+ 
+                    <apex:inputField id="ProjectDenyReason" value="{!task.ProjectDenyReason__c}" rendered="{!isEdit}"/>
+                    <apex:inputField id="Blocked" value="{!task.Blocked__c}"/>
+                    <apex:inputField id="BlockedReason" value="{!task.Blocked_Reason__c}"/>
+                    <apex:inputField id="EstimatedHours" value="{!task.Estimated_Hours__c}"/>
+                    <apex:inputField id="Location" value="{!task.Location__c}"/>
+                    <apex:inputField id="Customer" value="{!task.Customer__c}" rendered="{!task.Project_Milestone__c == null}"/>
+                    <apex:inputField id="Milestone" value="{!task.Project_Milestone__c }" rendered="{!task.Project_Milestone__c != null}"/>
+                    <apex:inputField id="Project" value="{!task.Project__c }" rendered="{!task.Project__c != null}"/>
+                    
+                    
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="客户基本信息" columns="2" rendered="{!TaskRecordtype == 'WorkOrder'}">
+                  
+                    <apex:inputField id="Customer" value="{!task.Customer__c}"  >
+                     
+
+                        
+                    </apex:inputfield>
+                    <apex:commandbutton value="读取客户设备" action="{!InitLstInner}" rerender="pb1" status="status" 
+                    />
+                   
+                    
+                    <apex:inputField id="CustomContact" value="{!task.CustomContact__c}"  />
+                    <apex:inputField id="CustonPhone" value="{!task.CustonPhone__c}"  />
+                    <apex:inputField id="Address" value="{!task.Address__c}"  />
+                    <apex:inputField id="Bandwidth" value="{!task.Bandwidth__c}"  />
+                    <apex:inputField id="NumberOfEmployees" value="{!task.NumberOfEmployees__c}"  />
+                    <apex:inputField id="SalesContact" value="{!task.SalesContact__c}"  />
+                    <apex:inputField id="PreSaleContact" value="{!task.PreSaleContact__c}"  />
+                    <apex:inputField id="CustomizedInfo" value="{!task.CustomizedInfo__c}"/>
+                    <apex:inputField id="CustomizedNum" value="{!task.CustomizedNum__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="项目基本信息" columns="2" rendered="{!TaskRecordtype == 'WorkOrder'}">
+                <apex:inputField id="name" value="{!task.name}"/>
+                <apex:inputField id="EstimatedHours" value="{!task.Estimated_Hours__c}"/>
+                <apex:inputField id="StartDate" value="{!task.Start_Date__c}" />
+                <apex:inputField id="DueDate" value="{!task.Due_Date__c}" />
+                
+
+                <apex:inputField id="Employee" value="{!task.Employee__c}"/>
+
+                    <apex:inputField id="ProjectDenyReason" value="{!task.ProjectDenyReason__c}" rendered="{!isEdit}"/>
+                
+                <apex:inputField id="TestCategory" value="{!task.TestCategory__c}" rendered="{!WorkOrdertype == '测试'}"/>
+                <apex:pageBlockSectionItem rendered="{!WorkOrdertype == '测试'}"/>
+                <apex:inputField id="WorkOrderPlan" value="{!task.WorkOrderPlan__c}" rendered="{!NOT(WorkOrdertype == '故障')}"/>
+                <apex:inputField id="Competitors" value="{!task.Competitors__c}" rendered="{!WorkOrdertype == '测试'}"/>
+                <apex:inputField id="ProductManager" value="{!task.ProductManager__c}" rendered="{!WorkOrdertype == '测试'}"/>
+                <apex:inputField id="ProductManagerContact" value="{!task.ProductManagerContact__c}" rendered="{!WorkOrdertype == '测试'}"/>
+                <apex:inputField id="DevlopManager" value="{!task.DevlopManager__c}" rendered="{!WorkOrdertype == '测试'}"/>
+                <apex:inputField id="DepartmentManagerContact" value="{!task.DepartmentManagerContact__c}" rendered="{!WorkOrdertype == '测试'}"/>
+                
+                    
+                    <apex:inputField id="Milestone" value="{!task.Project_Milestone__c }" rendered="{!task.Project__c != null}"/>
+                    <apex:inputField id="Project" value="{!task.Project__c }" rendered="{!task.Project__c != null}"/>
+                    
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="项目评分信息" columns="2" rendered="{!task.TaskStatus__c == '已完成'}">
+                <apex:inputField id="AssaginEvalution__c" value="{!task.AssaginEvalution__c}"/>
+                <apex:inputField id="projectManagerEvalution__c" value="{!task.projectManagerEvalution__c}"/>
+                
+                </apex:pageBlockSection>                
+                 <apex:pageBlockSection title="支持人员信息" columns="2" rendered="{!TaskRecordtype == 'WorkOrder'}">
+                <apex:commandButton value="查看项目人员状态" action="{!query}"  
+                     status="status" rerender="query, message"/>
+                <apex:pageBlockSectionItem />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >部门</apex:outputLabel>
+
+                    <apex:selectList id="department" value="{!department}" multiselect="false" size="1" >
+                        <apex:selectOptions value="{!departments }" ></apex:selectOptions>
+                        <apex:actionsupport event="onchange" rerender="AssignedTo" />
+                    </apex:selectList>
+      
+                    </apex:pageBlockSectionItem>
+                    <apex:selectList id="AssignedTo" value="{!task.Assigned_To__c}" multiselect="false" size="1" >
+                        <apex:selectOptions value="{!employees}" ></apex:selectOptions>
+                    </apex:selectList>
+
+                    <apex:inputField id="Contact" value="{!task.Contact__c}"/>
+                    <apex:inputField id="ManagerContact" value="{!task.ManagerContact__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="故障基本信息" columns="2" rendered="{!WorkOrdertype == '故障'}">
+                <apex:inputField id="TroubleDescription" value="{!task.TroubleDescription__c}"/>
+                <apex:inputField id="TroublePriority" value="{!task.TroublePriority__c}"/>
+                <apex:inputField id="TroubleResult" value="{!task.TroubleResult__c}"/>
+                <apex:inputField id="TopoMap" value="{!task.TopoMap__c}"/>
+                <apex:inputField id="OtherInfo" value="{!task.OtherInfo__c}"/>
+                <apex:inputField id="RemoteControlMode" value="{!task.RemoteControlMode__c}"/>
+                <apex:inputField id="RemoteControlDetail" value="{!task.RemoteControlDetail__c}"/>
+                <apex:inputField id="DevlopManager" value="{!task.DevlopManager__c}"/>
+                <apex:inputField id="DepartmentManagerContact" value="{!task.DepartmentManagerContact__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="支持设备" columns="1" rendered="{!TaskRecordtype == 'WorkOrder'}">
+  
+
+                 <apex:commandbutton value="添加设备" action="{!addMore}" rerender="pb1" 
+                    />
+                 <apex:commandbutton value="批量删除" action="{!massDel}" rerender="pb1" 
+                    />
+            
+ 
+                <apex:pageBlockTable value="{!lstInner}" var="Inner"  id="pb1"  >
+                    <apex:column >
+                        <apex:facet name="header"> 
+                            <apex:inputCheckbox onclick="checkAll(this)" />
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!Inner.selected}" id="checkedone" />
+                    </apex:column>
+                    
+                    <apex:column headerValue="设备类型" >
+                    <apex:inputfield value="{!Inner.proSnItem.ProductCategory__c} " />
+                    </apex:column>
+                    <apex:column headerValue="系统内序列号" >
+                    <apex:inputfield value="{!Inner.proSnItem.ProductSN__c} " />
+                    </apex:column>
+                    <apex:column headerValue="系统外序列号" >
+                    <apex:inputfield value="{!Inner.proSnItem.ProductSNString__c} " />
+                    </apex:column>
+                    <apex:column headerValue="状态" >
+                    <apex:inputfield value="{!Inner.proSnItem.Status__c}" />
+                    </apex:column>
+                    <apex:column headerValue="操作" >
+                    <apex:commandButton value="删除" action="{!Del}" rerender="pb1" 
+                    >
+                        <apex:param name="rowToBeDeleted" value="{!Inner.recCount}" assignTo="{!selectedRowIndex}"></apex:param>
+                    </apex:commandButton>
+                    </apex:column>
+                </apex:pageBlockTable> 
+                </apex:pageBlockSection>
+
+                
+                <apex:pageBlockSection title="支持内容、目标及进度" columns="2" rendered="{!TaskRecordtype == 'WorkOrder'}">
+                <apex:inputField id="Content1" value="{!task.Content1__c}"  />
+                <apex:inputField id="CompletionRate1" value="{!task.CompletionRate1__c}"/>
+                <apex:inputField id="Comment1" value="{!task.Comment1__c}"/>
+                <apex:inputField id="CompletionConfirm1" value="{!task.CompletionConfirm1__c}"/>
+                <apex:inputField id="OtherComment" value="{!task.OtherComment__c}"/>
+                <apex:inputField id="testResult" value="{!task.testResult__c}"/>
+                <apex:inputField id="OtherWorks" value="{!task.OtherWorks__c}"/>
+                </apex:pageBlockSection>
+               
+                <apex:pageBlockSection title="支持反馈" columns="2" rendered="{!TaskRecordtype == 'WorkOrder'}">
+                <apex:inputField id="Report" value="{!task.Report__c}"/>
+                <apex:inputField id="FeedBack" value="{!task.FeedBack__c}"/>
+                </apex:pageBlockSection>
+            </apex:outputpanel>
+            
+            <BR />
+            
+            <apex:outputPanel Id="query"  >
+            <apex:pageBlock rendered="{!hasQueryResult}"  title="任务工时状态">
+                    <apex:pageBlockTable value="{!Times}" var="time" >
+                    <apex:column headerValue="员工姓名" value="{!time.Employee__c}"/>   
+                    <apex:column headerValue="工时开始时间" value="{!time.StartTime__c}"/>   
+                    <apex:column headerValue="工时结束时间" value="{!time.EndTime__c}"/>    
+                    <apex:column headerValue="工作内容" value="{!time.Description__c}"/> 
+                    <apex:column headerValue="工作地点" value="{!time.Project_Task__r.Location__c}"/>   
+                    <apex:column headerValue="工时" value="{!time.Hours__c}"/> 
+                    </apex:pageBlockTable>   
+
+            </apex:pageBlock>
+            </apex:outputPanel>
+            
+        </apex:pageBlock>
+
+    </apex:form>
+</apex:page>

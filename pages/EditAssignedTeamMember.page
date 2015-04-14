@@ -1,0 +1,65 @@
+<apex:page standardController="Project_Task__c"  extensions="EditAssignedTeamMemberController">
+<apex:sectionHeader title="编辑项目任务"/>
+<apex:form id="form">
+<apex:actionFunction action="{!refreshPage}" name="refreshPage" reRender="form"/>
+<apex:pageMessages Id="message"/>
+        <apex:pageBlock mode="edit" >
+            <apex:pageBlockButtons >
+                <apex:commandButton value="查看项目人员状态" action="{!query}" status="status" rerender="query, message"/>
+                <apex:commandButton action="{!save}" value="保存" />
+                <apex:commandButton action="{!cancel}" value="取消" />
+                <apex:actionStatus id="status">
+                    <apex:facet name="start">
+                        <span style="width: 500px;">
+                            <img src="/img/loading24.gif" style="vertical-align:middle;"/>
+                            <span style="margin-left: 10px; font-size: 12px; font-weight: bold; color: #000000;">
+                               PleaseWait...</span>
+                        </span>
+                    </apex:facet>      
+                </apex:actionStatus>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2">
+                <apex:inputField value="{!Project_Task__c.name}"/>
+                <apex:inputField id="Location" value="{!Project_Task__c.Location__c}"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >部门</apex:outputLabel>
+                    <apex:selectList id="department" value="{!department}" multiselect="false" size="1" onchange="refreshPage()">
+                        <apex:selectOptions value="{!departments }" ></apex:selectOptions>
+                    </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    <apex:selectList id="AssignedTo" value="{!Project_Task__c.Assigned_To__c}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!employees}" ></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:inputField id="StartDate" value="{!Project_Task__c.Start_Date__c}"/>
+                    <apex:inputField id="DueDate" value="{!Project_Task__c.Due_Date__c}"/>
+                    <apex:inputField id="Description" value="{!Project_Task__c.Description__c}"/>
+                    <apex:inputField id="Priority" value="{!Project_Task__c.Priority__c}"/>
+                    <apex:inputField id="TaskStatus" value="{!Project_Task__c.TaskStatus__c}"/>
+                    <apex:inputField id="ProjectDenyReason" value="{!Project_Task__c.ProjectDenyReason__c}"/>
+
+                    
+                    
+                    <apex:inputField id="Blocked" value="{!Project_Task__c.Blocked__c}"/>
+                    <apex:inputField id="BlockedReason" value="{!Project_Task__c.Blocked_Reason__c}"/>
+                    <apex:inputField id="EstimatedHours" value="{!Project_Task__c.Estimated_Hours__c}"/>
+                    <apex:inputField id="Milestone" value="{!Project_Task__c.Project_Milestone__c }" rendered="{!ProjectTask}"/>
+                    <apex:inputField id="Project" value="{!Project_Task__c.Project__c }" rendered="{!ProjectTask}"/>
+            </apex:pageBlockSection>
+            <BR />
+            
+            <apex:outputPanel Id="query"  >
+            <apex:pageBlock rendered="{!hasQueryResult}"  title="任务工时状态">
+                    <apex:pageBlockTable value="{!Times}" var="time" >
+                    <apex:column headerValue="员工姓名" value="{!time.Employee__c}"/>   
+                    <apex:column headerValue="工时开始时间" value="{!time.StartTime__c}"/>   
+                    <apex:column headerValue="工时结束时间" value="{!time.EndTime__c}"/>    
+                    <apex:column headerValue="工作内容" value="{!time.Description__c}"/> 
+                    <apex:column headerValue="工作地点" value="{!time.Project_Task__r.Location__c}"/>   
+                    <apex:column headerValue="工时" value="{!time.Hours__c}"/> 
+                    </apex:pageBlockTable>   
+
+            </apex:pageBlock>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

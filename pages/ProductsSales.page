@@ -1,0 +1,86 @@
+<apex:page controller="AreaSalesTaskController"  showHeader="false">
+<script>
+function renderChartTip(klass, item) {
+    var m = item.storeItem;
+    this.setTitle(m.get('area'));
+
+    var sumA = formatCurrency(m.get('orderAmountNGFW'));
+    var sumB = formatCurrency(m.get('orderAmountICG'));
+    var sumC = formatCurrency(m.get('orderAmountITM'));
+    var sumD = formatCurrency(m.get('orderAmountOthers'));
+
+    this.update(''
+            + '<table>'
+            + '<tr><td><b>部门NGFW订单金额</b>&nbsp;</td><td>' + sumA  + '</td></tr>'
+            + '<tr><td><b>部门ICG订单金额</b>&nbsp;</td><td>' + sumB + '</td></tr>'
+            + '<tr><td><b>部门ITM订单金额</b>&nbsp;</td><td>' + sumC + '</td></tr>'
+            + '<tr><td><b>部门其他产品订单金额</b>&nbsp;</td><td>' + sumD + '</td></tr>'
+            + '</table>'
+            );
+}
+function formatCurrency(num) {
+    num = num.toString().replace(/\$|\,/g,'');
+    if(isNaN(num))
+    num = "0";
+    sign = (num == (num = Math.abs(num)));
+    num = Math.floor(num*100+0.50000000001);
+    cents = num%100;
+    num = Math.floor(num/100).toString();
+    if(cents<10)
+    cents = "0" + cents;
+    for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)
+    num = num.substring(0,num.length-(4*i+3))+','+
+    num.substring(num.length-(4*i+3));
+    return (((sign)?'':'-') + '￥' + num + '.' + cents);
+}
+</script>
+<apex:pageBlock >
+            <apex:form >
+            <apex:outputLink target="_top" value="/apex/ProductsSales" >全屏显示</apex:outputLink> 
+            <apex:actionStatus id="actionStatusDisplay"
+                    startText="loading..." stopText=""/>
+            <apex:pageBlockSection columns="1">
+            
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel >年度</apex:outputLabel>
+                <apex:selectList value="{!chartYear}" size="1">
+                    <apex:selectOptions value="{!chartYearOptions}"/>
+                    <apex:actionSupport event="onchange" reRender="theChart" 
+                        status="actionStatusDisplay"/>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel >季度</apex:outputLabel>
+                <apex:selectList value="{!chartQuarter}" size="1">
+                    <apex:selectOptions value="{!chartQuarterOptions}"/>
+                    <apex:actionSupport event="onchange" reRender="theChart" 
+                        status="actionStatusDisplay"/>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel >部门</apex:outputLabel>
+                <apex:selectList value="{!chartFilter}" size="1">
+                    <apex:selectOptions value="{!chartFilterOptions}"/>
+                    <apex:actionSupport event="onchange" reRender="theChart" 
+                        status="actionStatusDisplay"/>
+                 
+                </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            </apex:form>
+            
+         <apex:outputPanel id="theChart" >
+            <apex:chart height="380" width="100%" data="{!productsSalesData}">
+            <apex:legend position="right"/>
+                 <apex:axis minimum="0" type="Numeric" position="bottom" fields="orderAmountNGFW,orderAmountNGFW,orderAmountICG,orderAmountITM" title="订单金额"
+                    grid="true"/>
+                 <apex:axis type="Category" position="left" fields="area"
+                    title="部门"/>  
+             <apex:barSeries title="部门NGFW订单金额,部门ICG订单金额,部门ITM订单金额,部门其他产品订单金额" orientation="horizontal" axis="left"
+                 xField="orderAmountNGFW,orderAmountICG,orderAmountITM,orderAmountOthers" yField="area">
+                 <apex:chartTips height="100" width="300" rendererFn="renderChartTip"/>
+                </apex:barSeries>
+        </apex:chart> 
+        </apex:outputPanel>
+        </apex:pageBlock>
+  </apex:page>

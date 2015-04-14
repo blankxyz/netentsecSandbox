@@ -1,0 +1,37 @@
+<apex:page controller="clsAccountSearch" tabStyle="Account" showHeader="false">
+     <apex:form >
+         <apex:pageMessages />
+         <apex:pageBlock id="pbOpp" title="查找客户">
+             <div align="left">
+                 请输入客户名称关键字:
+                 <apex:inputText value="{!strKey}" />
+                 <apex:commandButton action="{!searchAccount}" value="搜索" />                
+             </div>
+             <apex:pageblocktable value="{!listAccount}" var="acc" rows="10">
+             	 <apex:column headerValue="销售区域">
+                      <apex:outputField value="{!acc.SellArea__r.Name}"/>
+                 </apex:column>
+                 <apex:column headerValue="客户名称">
+                      <apex:outputField value="{!acc.name}"/>
+                 </apex:column>
+                 <apex:column headerValue="客户记录类型">
+                      <apex:outputField value="{!acc.RecordTypeId}"/>
+                 </apex:column>
+                 <apex:column headerValue="渠道类型">
+                      <apex:outputField value="{!acc.ChannelType__c}"/>
+                 </apex:column>
+                  <apex:column headerValue="所有人">
+                      <apex:outputField value="{!acc.owner.name}"/>
+                 </apex:column>
+             </apex:pageblocktable>
+         </apex:pageBlock>  
+         <apex:panelgrid columns="5">         
+             <apex:commandLink action="{!first}">首页</apex:commandlink>
+             <apex:commandLink action="{!previous}" rendered="{!hasPrevious}">上一页</apex:commandlink>
+             <apex:commandLink action="{!next}" rendered="{!hasNext}">下一页</apex:commandlink>
+             <apex:commandLink action="{!last}">尾页</apex:commandlink>
+             第{!pageNumber}页   
+              共{!categoryNumber}条 
+         </apex:panelgrid>      
+     </apex:form>
+</apex:page>

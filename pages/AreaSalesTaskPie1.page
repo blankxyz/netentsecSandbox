@@ -1,0 +1,96 @@
+<apex:page controller="AreaSalesTaskActl"  action="{!init}">
+<script>
+function renderChartTip(klass, item) {
+    var m = item.storeItem;
+    this.setTitle(m.get('name'));
+    var sum = formatCurrency(m.get('data'));
+    if({!amoSumS} >0){
+    var percent = m.get('data')/{!amoSumS}*100;
+    percent = percent.toFixed(2);
+    }else{
+     var percent = 0;
+    }
+    this.update(''
+            + '<table>'
+            + '<tr><td><b>部门订单金额</b>&nbsp;</td><td>' + sum  + '</td></tr>'
+            + '<tr><td><b>比率</b>&nbsp;</td><td>' + percent    +'%</td></tr>'
+            + '</table>'
+            );
+}
+function formatCurrency(num) {
+    num = num.toString().replace(/\$|\,/g,'');
+    if(isNaN(num))
+    num = "0";
+    sign = (num == (num = Math.abs(num)));
+    num = Math.floor(num*100+0.50000000001);
+    cents = num%100;
+    num = Math.floor(num/100).toString();
+    if(cents<10)
+    cents = "0" + cents;
+    for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)
+    num = num.substring(0,num.length-(4*i+3))+','+
+    num.substring(num.length-(4*i+3));
+    return (((sign)?'':'-') + '￥' + num + '.' + cents);
+}
+</script>
+<apex:pageBlock >
+            <apex:form id="sum">
+	    <apex:outputLink target="_top" value="{!$Page.AreaSalesTaskPie1}" >全屏显示</apex:outputLink> 
+	    <apex:actionStatus id="actionStatusDisplay"
+	            startText="loading..." stopText=""/>
+	    <apex:pageBlockSection columns="1">
+		    <apex:pageBlockSectionItem >
+		    <apex:outputLabel >年度</apex:outputLabel>
+		        <apex:selectList value="{!chartYear}" size="1">
+		            <apex:selectOptions value="{!chartYearOptions}"/>
+		            <apex:actionSupport event="onchange" reRender="theChart,sum" 
+		                status="actionStatusDisplay"/>
+		        </apex:selectList>
+		    </apex:pageBlockSectionItem>
+		    <apex:pageBlockSectionItem >
+		    <apex:outputLabel >季度</apex:outputLabel>
+		        <apex:selectCheckboxes value="{!chartQuarter}">
+		            <apex:selectOptions value="{!chartQuarterOptions}"/>
+		            <apex:actionSupport event="onchange" reRender="theChart,sum" 
+		                status="actionStatusDisplay"/>
+		        </apex:selectCheckboxes>
+		    </apex:pageBlockSectionItem>
+		    <apex:pageBlockSectionItem >
+		    <apex:outputLabel >部门</apex:outputLabel>
+		        <apex:selectList value="{!chartFilter}" size="1" >
+		            <apex:selectOptions value="{!chartFilterOptions}"/>
+		            <apex:actionSupport event="onchange" reRender="theChart,sum"
+		                status="actionStatusDisplay"/>
+		        </apex:selectList>
+		    </apex:pageBlockSectionItem>
+		    <apex:pageBlockSectionItem >
+		         <apex:outputLabel >总销售额</apex:outputLabel>
+		        <apex:outputText value="{0, number,  #,###.00}" style="text-align: right;">
+		       <apex:param value="{!amoSumS}" />
+		         </apex:outputText>
+		    </apex:pageBlockSectionItem>
+		    <apex:pageBlockSectionItem >
+		         <apex:outputLabel >总计划销售任务</apex:outputLabel>
+		        <apex:outputText value="{0, number,  #,###.00}" style="text-align: right;">
+		       <apex:param value="{!planSumS}" />
+		         </apex:outputText>
+	        </apex:pageBlockSectionItem>
+	        <apex:pageBlockSectionItem >
+		         <apex:outputLabel >完成率</apex:outputLabel>
+		        <apex:outputText value="{0,number,0}%" style="text-align: right;">
+		       <apex:param value="{!planPercent}" />
+		         </apex:outputText>
+		    </apex:pageBlockSectionItem>
+	    </apex:pageBlockSection>
+            </apex:form>
+         <apex:outputPanel id="theChart">
+            <apex:chart height="600" width="300" data="{!DepartmentPieData}"> 
+                        <apex:pieSeries dataField="data" >
+                        <apex:chartLabel display="none"/>
+                        <apex:chartTips height="70" width="200" rendererFn="renderChartTip"/>
+                        </apex:pieSeries> 
+                        <apex:legend position="right"/> 
+            </apex:chart> 
+         </apex:outputPanel>
+         </apex:pageBlock>
+</apex:page>

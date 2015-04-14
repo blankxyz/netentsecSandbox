@@ -1,0 +1,111 @@
+<apex:page controller="DegreeOfJobSuturationCtl">
+  <!-- Begin Default Content REMOVE THIS -->
+<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/scripts/jquery-1.11.1.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.amcharts, '/amcharts/amcharts.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.amcharts, '/amcharts/serial.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.amcharts, '/amcharts/themes/light.js')}"/>
+
+<apex:pageBlock >
+<apex:form id="form1">
+        <apex:outputLink target="_top" value="/apex/DegreeOfJobSuturation" >全屏显示</apex:outputLink> 
+        <apex:actionStatus id="actionStatusDisplay"
+                startText="loading..." stopText=""/>
+    <apex:pageBlockSection columns="1">
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel >年度</apex:outputLabel>
+            <apex:selectList value="{!chartYear}" size="1" ID="chartYear">
+                <apex:selectOptions value="{!chartYearOptions}"/>
+                <apex:actionSupport event="onchange" reRender="theChart" action="{!getChartData}"
+                    status="actionStatusDisplay"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel >季度</apex:outputLabel>
+            <apex:selectCheckboxes value="{!chartQuarter}">
+                <apex:selectOptions value="{!chartQuarterOptions}"/>
+                <apex:actionSupport event="onchange" reRender="theChart" action="{!getChartData}"
+                    status="actionStatusDisplay"/>
+            </apex:selectCheckboxes>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel >大区</apex:outputLabel>
+            <apex:selectList value="{!chartDepart}" size="1" ID="chartDepart">
+                <apex:selectOptions value="{!chartDepartOptions}"/>
+                <apex:actionSupport event="onchange" reRender="theChart,chartSubDepart" action="{!getDepartData}"
+                    status="actionStatusDisplay"/>
+                    <apex:param name="isDepartChanged" assignto="{!isDepartChanged}" value="true"></apex:param>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        <apex:outputLabel >办事处</apex:outputLabel>
+            <apex:selectList value="{!chartSubDepart}" size="1" ID="chartSubDepart">
+                <apex:selectOptions value="{!chartSubDepartOptions}"/>
+                <apex:actionSupport event="onchange" reRender="theChart" action="{!getChartData}"
+                    status="actionStatusDisplay"/>
+            </apex:selectList>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+
+</apex:form>
+
+
+<apex:outputPanel id="theChart">
+
+<script  type='text/javascript'>//<![CDATA[ 
+if ({!dataJson} != '') {
+    var chart = AmCharts.makeChart("chartdiv", {
+        type: "serial",
+        theme: "light",
+        titles: [{
+            text : "技术服务部工作效率统计图",
+            size : 15
+        }],        
+        dataProvider: {!dataJson},
+        categoryField: "area",
+        startDuration: 2,
+        valueAxes: [{
+            axisAlpha: 0.15,
+            minimum: 0,
+            dashLength: 3,
+            axisTitleOffset: 20,
+            gridCount: 5,
+            unit: "%",
+            title: "有效率/饱和度"
+        }],
+        graphs: [
+            {
+                type: "column",
+                title: "工作饱和度",
+                valueField: "suturation",
+                fillAlphas:1,
+                fillColors: "#ADD981",
+                balloonText: "<span style='font-size:13px;'>[[category]] [[title]] :<b>[[value]]%</b></span>"
+            },{
+                type: "column",
+                title: "工作有效度",
+                valueField: "effectivity",
+                fillAlphas:1,
+                fillColors: "#81acd9",
+                balloonText: "<span style='font-size:13px;'>[[category]] [[title]] :<b>[[value]]%</b></span>"
+            }
+        ],
+        categoryAxis: {
+            gridPosition: "start",
+            position : "left"
+        },
+        legend: {
+                borderAlpha : 0.3,
+                horizontalGap : 10,
+                switchType : "v"         
+        }
+    });
+
+}
+//]]> 
+</script>
+<div id="chartdiv"  style="width: 100%; height: 400px;"></div>
+</apex:outputPanel> 
+</apex:pageBlock>
+
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

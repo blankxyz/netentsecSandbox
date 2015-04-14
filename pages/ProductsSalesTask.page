@@ -1,0 +1,78 @@
+<apex:page controller="AreaSalesTaskController" >
+<script>
+function renderChartTip(klass, item) {
+    var m = item.storeItem;
+    this.setTitle(m.get('Product'));
+
+    var sumA = formatCurrency(m.get('orderAmount'));
+
+    this.update(''
+            + '<table>'
+            + '<tr><td><b>订单金额</b>&nbsp;</td><td>' + sumA  + '</td></tr>'
+            + '</table>'
+            );
+}
+function formatCurrency(num) {
+    num = num.toString().replace(/\$|\,/g,'');
+    if(isNaN(num))
+    num = "0";
+    sign = (num == (num = Math.abs(num)));
+    num = Math.floor(num*100+0.50000000001);
+    cents = num%100;
+    num = Math.floor(num/100).toString();
+    if(cents<10)
+    cents = "0" + cents;
+    for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)
+    num = num.substring(0,num.length-(4*i+3))+','+
+    num.substring(num.length-(4*i+3));
+    return (((sign)?'':'-') + '￥' + num + '.' + cents);
+}
+</script>
+<apex:pageBlock >
+            <apex:form id="sum">
+            <apex:outputLink target="_top" value="/apex/ProductsSalesTask" >全屏显示</apex:outputLink> 
+            <apex:actionStatus id="actionStatusDisplay"
+                    startText="loading..." stopText=""/>
+            <apex:pageBlockSection columns="2">
+            
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel >年度</apex:outputLabel>
+                <apex:selectList value="{!chartYear}" size="1">
+                    <apex:selectOptions value="{!chartYearOptions}"/>
+                    <apex:actionSupport event="onchange" reRender="theChart,sum" 
+                        status="actionStatusDisplay"/>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel >季度</apex:outputLabel>
+                <apex:selectList value="{!chartQuarter}" size="1">
+                    <apex:selectOptions value="{!chartQuarterOptions}"/>
+                    <apex:actionSupport event="onchange" reRender="theChart,sum" 
+                        status="actionStatusDisplay"/>
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                 <apex:outputLabel >总销售额</apex:outputLabel>
+                <apex:outputText value="{0, number, ###,###.##}">
+               <apex:param value="{!amoSumS}" />
+                 </apex:outputText>
+           </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            </apex:form>
+            
+         <apex:outputPanel id="theChart" >
+            <apex:chart height="600" width="100%" data="{!productsSalesTaskData}">
+            <apex:legend position="top"/>
+                 <apex:axis minimum="0" type="Numeric" position="bottom" fields="orderAmount" title="订单金额"
+                    grid="true"/>
+                 <apex:axis type="Category" position="left" fields="Product"
+                    title="产品">  
+                    </apex:axis>
+             <apex:barSeries title="订单金额" orientation="horizontal" axis="left"
+                 xField="orderAmount" yField="Product">
+                 <apex:chartTips height="50" width="200" rendererFn="renderChartTip"/>
+                </apex:barSeries>
+        </apex:chart> 
+        </apex:outputPanel>
+        </apex:pageBlock>
+  </apex:page>

@@ -1,0 +1,64 @@
+<!--  
+Dis:订单明细打印PDF
+Time：2015年3月3日11:24:07
+Author:Gary Hu
+-->
+<apex:page renderAs="pdf" controller="Ctrl_OrderDetailsPDF">
+	<html>
+    <head> 
+         <style> 
+         body {font-family: Arial Unicode MS;}
+         
+         .underline{text-decoration:underline}
+
+       .c_table {
+			border-collapse: collapse;
+			font-size: 14px;
+		}
+		.c_table td {
+			border: #000 solid 1px;
+		}
+       
+        </style>
+    </head>
+    
+ <body>
+	<table width="100%" class="c_table">
+  <tr>
+    <td align="center">编号</td>
+    <td align="center">产品型号</td>
+    <td align="center">产品名称</td>
+    <td align="center">描述</td>
+    <td align="center">数量</td>
+    <td align="center">单价</td>
+    <td align="center">金额</td>
+    <td align="center">定制型号</td>
+    <td align="center">设备序列号</td>
+  </tr>
+  <apex:variable var="index" value="{!1}" />
+   <apex:repeat value="{!listOrderDetails}" var="item">
+	  <tr>
+	    <td align="center">
+	    	<apex:outputText value="{0,number}">
+				    <apex:param value="{!index}" />
+				</apex:outputText>
+	    	<apex:variable value="{!index + 1}" var="index" /></td>
+	    <td align="center"><apex:outputField value="{!item.ProType__c}" /></td>
+	    <td><apex:outputField value="{!item.ProNameCn__c}" /></td>
+	    <td><apex:outputField value="{!item.ProDis__c}" /></td>
+	    <td align="center"><apex:outputField value="{!item.n_ProCount__c}" /></td>
+	    <td align="center"><apex:outputField value="{!item.Final_Price__c}" /></td>
+	    <td align="center"><apex:outputField value="{!item.Final_Amount__c}" /></td>
+	    <td align="center"><apex:outputField value="{!item.n_CustomModels__c}" /></td>
+	    <td align="center"><apex:outputField value="{!item.shebeixuliehaoField2__c}" /></td>
+	  </tr>
+  </apex:repeat>
+  <tr>
+    <td align="center">合计<br/>金额</td>
+    <td colspan="5">&nbsp;（大写）人民币 ：<apex:outputText value="{!upOrderAmount}"/></td>
+    <td colspan="3">&nbsp;（小写）：<apex:outputField value="{!ObjOrder.Final_Price__c}"/></td>
+  </tr>
+</table>    
+ </body>
+</html>
+</apex:page>

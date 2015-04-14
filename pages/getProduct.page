@@ -1,0 +1,94 @@
+<apex:page Controller="getProductControllor" sidebar="false" showHeader="false">
+<head>
+	<apex:stylesheet value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/styles/jqx.base.css')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/styles/jqx.energyblue.css')}"/>	
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/scripts/jquery-1.11.1.min.js')}"/>
+
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxcore.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxdata.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxbuttons.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxdata.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxscrollbar.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxmenu.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxgrid.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxgrid.sort.js')}"/>	
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxgrid.filter.js')}"/>		
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxgrid.selection.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxgrid.columnsresize.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxlistbox.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxdropdownlist.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxpanel.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jQueryWidget, '/jqwidgets/jqxcheckbox.js')}"/>
+ 
+    <script type="text/javascript">
+        
+
+        $(document).ready(function () {
+
+        	if('{!taskId}' ==='' || '{!clientId}'==''||{!isNoData}) { $("#jqxgrid").text = '没有检索到相关信息，请确认(任务/工单)和客户信息是否有效！';
+        	}else{
+        		$("[name$='\\:submitform\\:jqxSubmitButton']").jqxButton({ theme: 'energyblue', width: '150', height: '25' });
+	        	//以下是表格数据处理
+				var data = {!ProductList};
+
+				// prepare the data
+				var source =
+				{
+				    datatype: "json",
+				    datafields: [
+				        { name: 'Id' },
+				        { name: 'Name' },
+				        { name: 'ProductStatus__c' },
+				        { name: 'ProductCategory__c' },
+				    ],
+				    localdata: data		    
+				};
+				var dataAdapter = new $.jqx.dataAdapter(source);
+
+	            $("#jqxgrid").jqxGrid(
+	            {
+	            	width:670,
+	                source: dataAdapter,
+	                theme: 'energyblue',
+	                selectionmode: 'checkbox',
+	                columns: [
+				        { text: 'SFDC-ID',datafield: 'Id'},
+				        { text: '序列号名称' ,datafield: 'Name',},
+				        { text: '状态' ,datafield: 'ProductStatus__c'},
+				        { text: '设备类别' ,datafield: 'ProductCategory__c'},
+	                ]
+	            });
+
+				$('#jqxgrid').bind('rowselect', function (event){
+	                var rows = $("#jqxgrid").jqxGrid('selectedrowindexes');
+
+	                var selectedRecords = new Array();
+					var value = new Array();
+	                for (var m = 0; m < rows.length; m++) {
+	                    var row = $('#jqxgrid').jqxGrid('getcellvalue', rows[m], "Id");
+	                    selectedRecords[selectedRecords.length] = '\'' + row + '\'';				
+	                }
+
+					$("input[name$='\\:submitform\\:selectIds']").val(selectedRecords);
+
+	            });	            
+        	}
+          
+        });
+			
+    </script>
+</head>
+<body class='default'>
+<apex:form id="submitform">
+    <div id='jqxWidget'>
+        <div id="jqxgrid"></div>
+        <div align="center">
+         <apex:commandButton action="{!addProduct}" value="添加为工单支持设备" id="jqxSubmitButton"/>
+         <apex:inputhidden value="{!selectIds}" id="selectIds"/>
+         <br></br>
+         如果没有结果显示，请手动添加工单支持设备。
+        </div>
+    </div>
+</apex:form>
+</body>    
+</apex:page>

@@ -1,0 +1,89 @@
+<apex:page >
+	<style>
+		.wordStyle{
+			font-weight: bold;
+		}
+	</style>
+  	<table bordercolor="black" cellspacing="0" border="1" width="1040px">
+  		<tr>
+  			<td align="center" colspan="6"><font size="5" class="wordStyle">网康销售兵法-项目篇</font></td>	
+  		</tr>
+		<tr class="wordStyle" bgcolor="yellow">
+			<td align="center" width="40px">项目<br/>阶段</td>
+			<td align="center" width="35px">工作<br/>方向</td>
+			<td align="center" width="300px">里程碑（进展考核点）</td>
+			<td align="center" width="600px">规定工作</td>
+			<td align="center" width="30px">成功<br/>几率</td>
+			<td align="center" width="35px">技能</td>
+		</tr>
+		
+		<tr>
+			<td class="wordStyle" rowspan="5" align="center">开拓<br/>阶段</td>
+			<td rowspan="5" align="center">挖掘需求</td>
+			<td rowspan="5">1、掌握客户的需求（清晰、完整有共识），确认项目商机；<br/>
+                2、确认决策链（商务+技术）及关键决策人；<br/>
+				3、提供产品解决方案。</td>
+			<td>调研客户背景，制定拜访计划</td>
+			<td rowspan="5" align="center">10%</td>
+			<td rowspan="5" align="center">MAN/PSS</td>
+		</tr>
+		<tr><td>上门拜访，寻问客户现状及困境，介绍公司及产品概况</td></tr>
+		<tr><td>分析和引导客户需求（FABE），填写《客户需求分析表》</td></tr>
+		<tr><td>了解客户组织架构，绘制《商务和技术决策链关系图》</td></tr>
+		<tr><td>针对客户需求设计提供《产品解决方案》</td></tr>
+		
+		<tr>
+			<td class="wordStyle" rowspan="7" align="center">细耕<br/>阶段</td>
+			<td rowspan="7" align="center">技术认可</td>
+			<td rowspan="7">1、在客户决策链中成功发展内线；<br/>
+							2、获得客户技术决策链对我们产品方案的认可；<br/>
+							3、掌握竞争对手在此项目的信息</td>
+			<td>
+				分析客户决策链，寻找突破点，通过高频拜访发展并确认内线
+			</td>
+			<td rowspan="7" align="center">30%</td>
+			<td rowspan="7" align="center">PSS/SPIN</td>
+		</tr>
+		<tr><td>广泛接触决策链相关人员，发展内部支持者</td></tr>
+		<tr><td>沟通客户测试计划，引导客户使用我方提供的《测试方案用例》</td></tr>
+		<tr><td>获得并分析客户最终测试方案，确定客户测试人员（重点攻关），对照《测试检查表》进行测试前准备</td></tr>
+		<tr><td>密切跟进测试过程，保障并记录测试结果，提前拿到我方及竞品《测试报告》初稿，进行有利引导，获取并分析最终《测试报告》</td></tr>
+		<tr><td>进行客户高层（决策链中的最高决策者）拜访，提升品牌认知和认可度</td></tr>
+		<tr><td>了解此项目竞争品牌相关信息，填写《项目竞争分析表》</td></tr>
+		
+		<tr>
+			<td class="wordStyle" rowspan="6" align="center">决策<br/>阶段</td>
+			<td rowspan="6" align="center">商务认可</td>
+			<td rowspan="6">1、赢得客户商务决策链对我方的明确采购倾向。最高决策者/决策链中的多数人倾向于采购我方产品；<br/>
+							2、赢得客户技术决策链对我方的明确采购倾向，同意采用有利我方的招标参数、评分标准、评委人选； <br/>
+							3、、选择客户认可的合作伙伴，并与其明确合作关系</td>
+			<td>
+				高频次客户公关，与客户商务和技术关键决策者建立同盟关系
+			</td>
+			<td rowspan="6" align="center">60%</td>
+			<td rowspan="6" align="center">CRM</td>
+		</tr>
+		<tr><td>引导《立项报告》的撰写，推动客户立项工作</td></tr>
+		<tr><td>引导客户采用有利于我方的采购模式（招标、邀标、竞谈等）、预算、采购时间点等</td></tr>
+		<tr><td>根据采购模式与客户同盟者共同选择项目合作伙伴</td></tr>
+		<tr><td>与合作伙伴明确合作关系、项目角色分工及利益分配</td></tr>
+		<tr><td>引导客户采用有利我方的招标参数、评分标准、评委人选</td></tr>
+		
+		<tr>
+			<td class="wordStyle" rowspan="4" align="center">谈判<br/>阶段</td>
+			<td rowspan="4" align="center">项目成功</td>
+			<td rowspan="4">1、中标；<br/>
+							3、签订采购合同</td>
+			<td>
+				分析招标文件，制定投标策略，严格依据招标要求制作投标书、讲标PPT<br/>
+			</td>
+			<td rowspan="4" align="center">90%</td>
+			<td rowspan="4"></td>
+		</tr>
+		<tr><td>封标，投标，现场讲标<br/></td></tr>
+		<tr><td>如我方为预中标方，与各关联方跟进保障性沟通，确保签约</td></tr>
+		<tr><td>如形势不利于我方，采取废标、质疑等应激措施</td></tr>
+		
+  	</table>
+
+</apex:page>
