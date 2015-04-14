@@ -1,3 +1,7 @@
+
+/**
+ *  仪表盘测试类
+ */
 @isTest(SeeAllData=true)
 private class DegreeOfJobSuturationTest
 {
